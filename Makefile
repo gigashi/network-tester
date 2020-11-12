@@ -11,6 +11,7 @@ WINDOWS := windows-amd64
 
 SERVER_TARGETS = ./bin/$(LINUX)/$(NT_SERVER) ./bin/$(MAC)/$(NT_SERVER) ./bin/$(WINDOWS)/$(NT_SERVER).exe
 CLIENT_TARGETS = ./bin/$(LINUX)/$(NT_CLIENT) ./bin/$(MAC)/$(NT_CLIENT) ./bin/$(WINDOWS)/$(NT_CLIENT).exe
+ZIP            = ./bin/network-tester.zip
 
 # task
 
@@ -19,13 +20,19 @@ all: $(SERVER_TARGETS) $(CLIENT_TARGETS)
 
 .PHONY: clean
 clean:
-	@rm -f $(SERVER_TARGETS) $(CLIENT_TARGETS)
+	@rm -f $(SERVER_TARGETS) $(CLIENT_TARGETS) $(ZIP)
 
 .PHONY: test
 test:
 	go vet ./...
 	go mod tidy
 	go test ./...
+
+.PHONY: zip
+zip: $(ZIP)
+$(ZIP): $(SERVER_TARGETS) $(CLIENT_TARGETS)
+	@zip -r $(ZIP) `find bin -type f | grep -v .gitignore`
+	@unzip -Z $(ZIP)
 
 # server
 
